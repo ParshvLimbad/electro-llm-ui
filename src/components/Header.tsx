@@ -1,10 +1,19 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { Button } from "./ui/button";
+import SettingsModal from "./SettingsModal";
 
 const Header = () => {
+  const [modalState, setModalState] = useState(false);
+
+  const modalStateTrue = () => {
+    setModalState(true);
+  };
+
   gsap.registerPlugin(useGSAP);
 
   const container = useRef();
@@ -55,9 +64,18 @@ const Header = () => {
         <div className="blob bg-[#17ccf0] h-40 w-40 absolute rounded-full blur-2xl opacity-40"></div>
         <div className="blob-2 bg-yellow-600 h-40 w-40 absolute rounded-full blur-2xl opacity-30"></div>
       </div>
-      <h1 className="text-[60px] text-[#dfeef1] absolute top-6 left-10 font-medium tracking-tighter">
+      <h1 className="text-[60px] text-[#dfeef1] absolute top-4 left-10 font-medium tracking-tighter">
         Electro
       </h1>
+      <div className="absolute right-10 top-10">
+        <Button
+          onClick={modalStateTrue}
+          className="rounded-full text-[#052D23] w-10 scale-90 bg-[#17ccf0] mr-1 my-1 hover:bg-[#17ccf0] hover:rotate-[-45deg] duration-300 ease-in-out"
+        >
+          <SettingsIcon />
+        </Button>
+      </div>
+      {modalState && <SettingsModal />}
       <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/CustomEase.min.js"></script>
     </nav>
   );

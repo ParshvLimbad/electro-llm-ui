@@ -87,25 +87,27 @@ const ChatApp = () => {
         ))}
       </div>
       <div className="flex flex-col w-full items-center bg-[#050e10] sticky bottom-0">
-        <div className="flex items-center gap-3 justify-end w-[40%]">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="text-[#dfeef1] bg-[#001a1f] py-2 px-4 rounded-full outline-none border border-[#001a1f] border-2 focus:border-[#17ccf0] ease-in-out duration-300 w-full"
-          />
-          <Button
-            onClick={handleSendMessage}
-            className="rounded-full w-10 bg-white hover:bg-[#17ccf0]"
-          >
-            <ArrowOutwardIcon className="text-[#052D23]" />
-          </Button>
+        <div className="flex items-center gap-3 justify-end w-[45rem]">
+          <div className="flex flex-row bg-[#001a1f] items-center rounded-full w-full">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="text-[#dfeef1] bg-[#001a1f] py-2 px-4 rounded-full outline-none border border-[#001a1f] border-2 focus:border-[#17ccf0] ease-in-out duration-300 w-full"
+            />
+            <Button
+              onClick={handleSendMessage}
+              className="rounded-full w-10 scale-90 mr-1 my-1 bg-white hover:bg-[#17ccf0]"
+            >
+              <ArrowOutwardIcon className="text-[#052D23]" />
+            </Button>
+          </div>
         </div>
         <div className="flex flex-row items-center gap-2">
           <p className="py-2 text-[#DFEEF1] text-[14px]">
             Created by Parshv Limbad{" "}
           </p>
-          <GitHubIcon className="text-[#17ccf0]" />
+          <GitHubIcon className="text-[#17ccf0] h-5" />
         </div>
       </div>
     </div>

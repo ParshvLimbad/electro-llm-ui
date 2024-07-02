@@ -12,8 +12,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { CardTitle } from "./ui/card";
 import { Card } from "./ui/card";
 import { Input } from "./ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "./ui/toaster";
+import { ToastClose } from "./ui/toast";
 
-// Custom hook for persistent state
 const usePersistentState = (key, initialValue) => {
   const [state, setState] = useState(() => {
     try {
@@ -42,7 +44,6 @@ const ChatApp = () => {
   const [model, setModel] = usePersistentState("model", "");
   const [modalState, setModalState] = useState(false);
 
-  // Test localStorage
   useEffect(() => {
     try {
       localStorage.setItem("testKey", "testValue");
@@ -87,6 +88,12 @@ const ChatApp = () => {
       setMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
+      toast({
+        variant: "destructive",
+        title: "No model selected",
+        description: `Please select a model in settings to continue`,
+        onClick: modalStateTrue,
+      });
     }
   }, [message, model, setChatHistory, setMessage]);
 
@@ -149,6 +156,8 @@ const ChatApp = () => {
     });
   });
 
+  const { toast } = useToast();
+
   return (
     <>
       <nav>
@@ -176,16 +185,42 @@ const ChatApp = () => {
               </button>
             </div>
             <div className="flex flex-col mt-6 w-full items-center">
-              <div className="w-[20rem] mb-2">
+              <div className="w-[25rem] mb-2">
                 <label className="text-[#17ccf0] self-start">Model</label>
               </div>
               <Input
                 value={model}
                 onChange={handleModelChange}
-                className="text-[#DFEEF1] rounded-full px-4 py-1 w-[20rem] outline-none border border-[#27272A] border-2 focus:border-[#17ccf0] ease-in-out duration-300 bg-[#09090B] focus-visible:ring-[none]"
+                className="text-[#DFEEF1] rounded-full px-4 py-1 w-[25rem] outline-none border border-[#27272A] border-2 focus:border-[#17ccf0] ease-in-out duration-300 bg-[#09090B] focus-visible:ring-[none]"
               ></Input>
             </div>
-            <Button onClick={modalStateFalse}>Save</Button>
+            <div className="w-full flex justify-end w-[26rem] mt-24">
+              <Button
+                onClick={() => {
+                  setModalState(false);
+                  {
+                    model &&
+                      toast({
+                        title: "Model Setup successful!",
+                        description: `Model set to ${model}`,
+                        style: { backgroundColor: "#17ccf0", border: "0px" },
+                      });
+                  }
+                  {
+                    !model &&
+                      toast({
+                        variant: "destructive",
+                        title: "No model selected",
+                        description: `Please select a model in settings to continue`,
+                        onClick: modalStateTrue,
+                      });
+                  }
+                }}
+                className="bg-[#17ccf0] text-black hover:bg-[#17ccf0]"
+              >
+                Save
+              </Button>
+            </div>
           </Card>
         )}
         <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/CustomEase.min.js"></script>
@@ -251,9 +286,17 @@ const ChatApp = () => {
             <p className="py-2 text-[#DFEEF1] text-[14px]">
               Created by Parshv Limbad{" "}
             </p>
-            <GitHubIcon className="text-[#17ccf0] h-5" />
+            <button>
+              <a
+                href="https://github.com/ParshvLimbad/electro-llm-ui"
+                target="_blank"
+              >
+                <GitHubIcon className="text-[#17ccf0] h-5" />
+              </a>
+            </button>
           </div>
         </div>
+        <Toaster />
       </div>
     </>
   );

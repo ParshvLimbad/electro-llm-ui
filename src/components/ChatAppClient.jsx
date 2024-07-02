@@ -41,6 +41,7 @@ const ChatApp = () => {
   const [message, setMessage] = usePersistentState("message", "");
   const [chatHistory, setChatHistory] = usePersistentState("chatHistory", []);
   const [model, setModel] = usePersistentState("model", "");
+  const [host, setHost] = useState("");
   const [modalState, setModalState] = useState(false);
 
   useEffect(() => {
@@ -60,13 +61,38 @@ const ChatApp = () => {
   const handleModelChange = (e) => {
     setModel(e.target.value);
   };
+  const handleHostChange = (e) => {
+    setHost(e.target.value);
+  };
 
   const handleSendMessage = useCallback(async () => {
     if (!message.trim()) return;
 
+    if (!host.trim()) {
+      toast({
+        variant: "destructive",
+        title: "No host selected",
+        description: "Please select a host port in settings to continue",
+        style: { cursor: "pointer", border: "0px", marginBottom: "10px" },
+        onClick: modalStateTrue,
+      });
+      return;
+    }
+
     try {
+      if (!model.trim()) {
+        toast({
+          variant: "destructive",
+          title: "No model selected",
+          description: "Please select a model in settings to continue",
+          style: { cursor: "pointer", border: "0px", marginBottom: "10px" },
+          onClick: modalStateTrue,
+        });
+        return;
+      }
+
       const res = await axios.post(
-        "http://localhost:11434/api/generate",
+        `${host}`,
         {
           model: model || "default",
           prompt: message,
@@ -89,12 +115,12 @@ const ChatApp = () => {
       console.error("Error sending message:", error);
       toast({
         variant: "destructive",
-        title: "No model selected",
-        description: `Please select a model in settings to continue`,
-        onClick: modalStateTrue,
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+        style: { cursor: "pointer", border: "0px", marginBottom: "10px" },
       });
     }
-  }, [message, model, setChatHistory, setMessage]);
+  }, [message, model, host, setChatHistory, setMessage]);
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text).then(
@@ -176,7 +202,7 @@ const ChatApp = () => {
           </Button>
         </div>
         {modalState && (
-          <Card className="absolute p-7 ml-auto mr-auto left-0 right-0 top-[25%] w-[30rem] h-[20rem] bg-[#09090B] border-[#27272A]">
+          <Card className="absolute p-7 ml-auto mr-auto left-0 right-0 top-[25%] w-[30rem] bg-[#09090B] border-[#27272A]">
             <div className="flex flex-row justify-between">
               <CardTitle className="text-[#FAFAFA]">Settings</CardTitle>
               <button onClick={modalStateFalse}>
@@ -193,6 +219,16 @@ const ChatApp = () => {
                 className="text-[#DFEEF1] rounded-full px-4 py-1 w-[25rem] outline-none border border-[#27272A] border-2 focus:border-[#17ccf0] ease-in-out duration-300 bg-[#09090B] focus-visible:ring-[none]"
               ></Input>
             </div>
+            <div className="flex flex-col mt-6 w-full items-center">
+              <div className="w-[25rem] mb-2">
+                <label className="text-[#17ccf0] self-start">Host</label>
+              </div>
+              <Input
+                value={host}
+                onChange={handleHostChange}
+                className="text-[#DFEEF1] rounded-full px-4 py-1 w-[25rem] outline-none border border-[#27272A] border-2 focus:border-[#17ccf0] ease-in-out duration-300 bg-[#09090B] focus-visible:ring-[none]"
+              ></Input>
+            </div>
             <div className="w-full flex justify-end w-[26rem] mt-24">
               <Button
                 onClick={() => {
@@ -202,7 +238,11 @@ const ChatApp = () => {
                       toast({
                         title: "Model Setup successful!",
                         description: `Model set to ${model}`,
-                        style: { backgroundColor: "#17ccf0", border: "0px" },
+                        style: {
+                          backgroundColor: "#17ccf0",
+                          border: "0px",
+                          marginBottom: "10px",
+                        },
                       });
                   }
                   {
@@ -211,7 +251,37 @@ const ChatApp = () => {
                         variant: "destructive",
                         title: "No model selected",
                         description: `Please select a model in settings to continue`,
-                        style: { cursor: "pointer", border: "0px" },
+                        style: {
+                          cursor: "pointer",
+                          border: "0px",
+                          marginBottom: "10px",
+                        },
+                        onClick: modalStateTrue,
+                      });
+                  }
+                  {
+                    host &&
+                      toast({
+                        title: "Host Setup successful!",
+                        description: `Host URL set to ${host}`,
+                        style: {
+                          backgroundColor: "#17ccf0",
+                          border: "0px",
+                          marginBottom: "10px",
+                        },
+                      });
+                  }
+                  {
+                    !host &&
+                      toast({
+                        variant: "destructive",
+                        title: "No host selected",
+                        description: `Please select a host port in settings to continue`,
+                        style: {
+                          cursor: "pointer",
+                          border: "0px",
+                          marginBottom: "10px",
+                        },
                         onClick: modalStateTrue,
                       });
                   }
@@ -236,7 +306,7 @@ const ChatApp = () => {
                   : "bg-[#17ccf0] text-[#052D23] self-start text-left text-[14px]"
               }`}
             >
-              {chat.text.includes("<code>") ? (
+              {chat.text && chat.text.includes("<code>") ? (
                 <div className="relative">
                   <pre
                     className={`w-full p-2 overflow-auto ${

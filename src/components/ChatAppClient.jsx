@@ -14,7 +14,6 @@ import { Card } from "./ui/card";
 import { Input } from "./ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "./ui/toaster";
-import { ToastClose } from "./ui/toast";
 
 const usePersistentState = (key, initialValue) => {
   const [state, setState] = useState(() => {
@@ -212,6 +211,7 @@ const ChatApp = () => {
                         variant: "destructive",
                         title: "No model selected",
                         description: `Please select a model in settings to continue`,
+                        style: { cursor: "pointer", border: "0px" },
                         onClick: modalStateTrue,
                       });
                   }
